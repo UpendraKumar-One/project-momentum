@@ -55,6 +55,8 @@ public:
             return *this;
         }
 
+        // postfix increment is a little slower than prefix so we are just avoiding it here
+
         // Iterator operator++(int)
         // {
         //     Iterator tmp = *this;
@@ -70,11 +72,6 @@ public:
         {
             return p_view_->p_target_pool_->GetEntityList()[i_index_];
         }
-
-        // pointer operator->()
-        // {
-        //     return it_ptr;
-        // }
 
         friend bool operator==(const Iterator &a, const Iterator &b)
         {
