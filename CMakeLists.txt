@@ -1,11 +1,18 @@
 cmake_minimum_required(VERSION 3.21)
 
+set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
+
 project(project_momentum)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+#----------------------------------------------------------------------------------------------------------------------------------
+
+# FETCH CONTENT
+
+# raylib---
 include(FetchContent)
 FetchContent_Declare(
     raylib
@@ -14,26 +21,67 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(raylib)
 
-add_executable(project_momentum main.cpp)
+#----------------------------------------------------------------------------------------------------------------------------------
 
-target_include_directories(project_momentum
-    PRIVATE ./
+# INTERFACE FOR ALL THE HEADERS
+
+# include/
+add_library(project_includes INTERFACE)
+target_include_directories(project_includes INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(project_includes INTERFACE raylib)
+
+#----------------------------------------------------------------------------------------------------------------------------------
+
+# STATIC LIBRARIES
+
+# src/game/systems/---
+
+
+
+# src/engine/core/---
+add_library(core STATIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/core/input_manager.cpp
 )
-    
-target_link_libraries(project_momentum PRIVATE application)
-    
-add_library(application STATIC application.cpp)
 
-target_include_directories(application 
-    PUBLIC ./
+
+# src/engine/ecs/---
+add_library(ecs STATIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/ecs/entity_manager.cpp
 )
 
-target_link_libraries(application PUBLIC raylib input_manager)
 
-add_library(input_manager STATIC input_manager.cpp)
+#src/engine/systems/---
+add_library(engine_systems STATIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/systems/physics_system.cpp
+)
+target_link_libraries(engine_systems PUBLIC ecs)
 
-target_include_directories(input_manager
-    PUBLIC ./
+# PROVIDING INCLUDE PATHS FOR LIBRARIES
+
+set(PROJECT_STATIC_LIBS
+    core
+    ecs
+    engine_systems
 )
 
-target_link_libraries(input_manager PUBLIC raylib)
+foreach(lib IN LISTS PROJECT_STATIC_LIBS)
+    target_link_libraries(${lib} PUBLIC project_includes)
+endforeach()
+
+#----------------------------------------------------------------------------------------------------------------------------------
+
+# EXECUTABLES
+
+# src/game/---
+add_executable(main_client 
+    src/game/main.cpp
+    src/game/application.cpp
+    src/game/entity_factory.cpp
+)
+
+target_link_libraries(main_client PRIVATE 
+    project_includes
+    core
+    ecs
+    engine_systems
+)

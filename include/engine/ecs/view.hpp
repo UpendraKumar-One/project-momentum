@@ -1,6 +1,6 @@
 #pragma once
 
-#include "component_pool.hpp"
+#include "engine/ecs/component_pool.hpp"
 #include <tuple>
 #include <algorithm>
 

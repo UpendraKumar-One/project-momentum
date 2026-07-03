@@ -1,6 +1,6 @@
 #pragma once
 
-#include "entity.hpp"
+#include "engine/ecs/entity.hpp"
 #include <bitset>
 
 class EntityManager

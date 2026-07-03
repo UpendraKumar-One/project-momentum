@@ -1,13 +1,13 @@
 #pragma once
 
-#include "lazy_array.hpp"
-#include "entity_manager.hpp"
+#include "engine/core/lazy_array.hpp"
+#include "engine/ecs/entity_manager.hpp"
 #include <utility>
 #include <cassert>
 
 namespace ComponentPoolConstants
 {
-    uint16_t NULL_INDEX = 0xFFFF;
+    constexpr uint16_t NULL_INDEX = 0xFFFF;
 }
 
 class IPool

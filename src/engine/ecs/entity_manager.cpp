@@ -1,4 +1,4 @@
-#include "entity_manager.hpp"
+#include "engine/ecs/entity_manager.hpp"
 #include <cassert>
 
 EntityManager::EntityManager()
