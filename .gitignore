@@ -1,4 +1,6 @@
 build/
+test/
+assets/tileset/
 
 temp.cpp
 temp.exe

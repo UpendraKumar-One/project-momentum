@@ -19,6 +19,12 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(raylib)
 
+# nlohmann/json
+FetchContent_Declare(json
+    URL https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz
+)
+FetchContent_MakeAvailable(json)
+
 #----------------------------------------------------------------------------------------------------------------------------------
 
 # INTERFACE FOR ALL THE HEADERS
