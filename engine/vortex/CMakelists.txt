@@ -1,0 +1,79 @@
+cmake_minimum_required(VERSION 4.0)
+
+project(vortex)
+
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+#----------------------------------------------------------------------------------------------------------------------------------
+
+# FETCH CONTENT
+
+# raylib---
+include(FetchContent)
+FetchContent_Declare(
+    raylib
+    GIT_REPOSITORY https://github.com/raysan5/raylib
+    GIT_TAG master
+)
+FetchContent_MakeAvailable(raylib)
+
+# nlohmann/json---
+FetchContent_Declare(json
+    URL https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz
+)
+FetchContent_MakeAvailable(json)
+
+#----------------------------------------------------------------------------------------------------------------------------------
+
+# INTERFACE for all the include paths
+add_library(vortex_includes INTERFACE)
+target_include_directories(vortex_includes INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include/)
+
+#----------------------------------------------------------------------------------------------------------------------------------
+
+# STATIC LIBRARIES
+
+# src/core/---
+add_library(vortex_core STATIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/core/input_manager.cpp
+)
+
+
+# src/ecs/---
+add_library(vortex_ecs STATIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ecs/entity_manager.cpp
+)
+
+
+#src/systems/---
+add_library(vortex_systems STATIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/systems/physics_system.cpp
+)
+target_link_libraries(vortex_systems PUBLIC vortex_ecs)
+
+# PROVIDING INCLUDE PATHS FOR LIBRARIES
+
+set(PROJECT_STATIC_LIBS
+    vortex_core
+    vortex_ecs
+    vortex_systems
+)
+
+foreach(lib IN LISTS PROJECT_STATIC_LIBS)
+    target_link_libraries(${lib} PUBLIC vortex_includes)
+endforeach()
+
+#----------------------------------------------------------------------------------------------------------------------------------
+
+# UMBRELLA TARGET
+
+add_library(vortex INTERFACE)
+target_link_libraries(vortex INTERFACE
+    vortex_includes
+
+    vortex_core
+    vortex_ecs
+    vortex_systems
+)
