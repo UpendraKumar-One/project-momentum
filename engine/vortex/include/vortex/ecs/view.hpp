@@ -4,18 +4,18 @@
 #include <tuple>
 #include <algorithm>
 
-namespace Vortex::Ecs
+namespace vortex::ecs
 {
     template <typename... Components>
     class ComponentView
     {
     public:
         ComponentView(ComponentPool<Components> *...pools)
-            : t_pools_(pools...)
+            : m_pools(pools...)
         {
-            b_isEmpty_ = ((pools == nullptr) || ...);
+            m_isEmpty = ((pools == nullptr) || ...);
 
-            if (!b_isEmpty_)
+            if (!m_isEmpty)
             {
                 const IPool *base_pools[] = {static_cast<const IPool *>(pools)...};
 
@@ -25,7 +25,7 @@ namespace Vortex::Ecs
                                                               return a->size() < b->size();
                                                           });
 
-                p_target_pool_ = min_pool;
+                m_targetPool = min_pool;
             }
         }
 
@@ -39,9 +39,9 @@ namespace Vortex::Ecs
             using reference = uint16_t &;
 
             Iterator(const ComponentView *view, uint16_t index)
-                : p_view_(view), i_index_(index)
+                : m_view(view), m_index(index)
             {
-                if (i_index_ < GetTargetSize() && !IsValid())
+                if (m_index < getTargetSize() && !isValid())
                 {
                     ++(*this);
                 }
@@ -51,59 +51,46 @@ namespace Vortex::Ecs
             {
                 do
                 {
-                    ++i_index_;
-                } while (i_index_ < GetTargetSize() && !IsValid());
+                    ++m_index;
+                } while (m_index < getTargetSize() && !isValid());
 
                 return *this;
             }
 
-            // postfix increment is a little slower than prefix so we are just avoiding it here
-
-            // Iterator operator++(int)
-            // {
-            //     Iterator tmp = *this;
-            //     do
-            //     {
-            //         ++i_index_;
-            //     } while (i_index_ < GetTargetSize() && !IsValid());
-
-            //     return tmp;
-            // }
-
             value_type operator*() const
             {
-                return p_view_->p_target_pool_->GetEntityList()[i_index_];
+                return m_view->m_targetPool->getEntityList()[m_index];
             }
 
             friend bool operator==(const Iterator &a, const Iterator &b)
             {
-                return (a.i_index_ == b.i_index_) && (a.p_view_ == b.p_view_);
+                return (a.m_index == b.m_index) && (a.m_view == b.m_view);
             }
 
             friend bool operator!=(const Iterator &a, const Iterator &b)
             {
-                return (a.i_index_ != b.i_index_) || (a.p_view_ != b.p_view_);
+                return (a.m_index != b.m_index) || (a.m_view != b.m_view);
             }
 
         private:
-            size_t GetTargetSize() const
+            size_t getTargetSize() const
             {
-                return p_view_->p_target_pool_->size();
+                return m_view->m_targetPool->size();
             }
 
-            bool IsValid() const
+            bool isValid() const
             {
-                entity ent = p_view_->p_target_pool_->GetEntityList()[i_index_];
-                return p_view_->HasAllComponents(ent);
+                Entity ent = m_view->m_targetPool->getEntityList()[m_index];
+                return m_view->hasAllComponents(ent);
             }
 
-            size_t i_index_;
-            const ComponentView *p_view_;
+            size_t m_index;
+            const ComponentView *m_view;
         };
 
         Iterator begin() const
         {
-            if (b_isEmpty_ || p_target_pool_->size() == 0)
+            if (m_isEmpty || m_targetPool->size() == 0)
             {
                 return end();
             }
@@ -112,18 +99,18 @@ namespace Vortex::Ecs
 
         Iterator end() const
         {
-            return Iterator(this, p_target_pool_ ? p_target_pool_->size() : 0);
+            return Iterator(this, m_targetPool ? m_targetPool->size() : 0);
         }
 
     private:
-        bool HasAllComponents(entity ent) const
+        bool hasAllComponents(Entity ent) const
         {
             return std::apply([ent](ComponentPool<Components> *...pools)
-                              { return (pools->Has(ent) && ...); }, t_pools_);
+                              { return (pools->has(ent) && ...); }, m_pools);
         }
 
-        std::tuple<ComponentPool<Components> *...> t_pools_;
-        const IPool *p_target_pool_ = nullptr;
-        bool b_isEmpty_;
+        std::tuple<ComponentPool<Components> *...> m_pools;
+        const IPool *m_targetPool = nullptr;
+        bool m_isEmpty;
     };
 }

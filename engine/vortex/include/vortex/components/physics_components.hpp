@@ -2,45 +2,45 @@
 
 #include <cstdint>
 
-namespace Vortex::Components
+namespace vortex::components
 {
     enum CollisionFlags : uint8_t
     {
-        NONE = 0,
-        TOUCHING_UP = 1 << 0,
-        TOUCHING_LEFT = 1 << 1,
-        TOUCHING_DOWN = 1 << 2,
-        TOUCHING_RIGHT = 1 << 3
+        None = 0,
+        TouchingUp = 1 << 0,
+        TouchingLeft = 1 << 1,
+        TouchingDown = 1 << 2,
+        TouchingRight = 1 << 3
     };
 
-    struct _Transform
+    struct TransformComponent
     {
-        float f_x, f_y;
-        float f_prev_x, f_prev_y;
-        float f_rotation;
+        float x, y;
+        float prev_x, prev_y;
+        float rotation;
     };
 
-    struct _RigidBody
+    struct RigidBodyComponent
     {
-        float f_gravityScale;
+        float gravity_scale;
 
-        float f_velocity_x, f_velocity_y;
-        float f_maxVelocity_x, f_maxVelocity_y;
-        float f_acceleration_x, f_acceleration_y;
+        float velocity_x, velocity_y;
+        float max_velocity_x, max_velocity_y;
+        float acceleration_x, acceleration_y;
 
-        float f_mass;
-        float f_drag;
-        float f_friction;
+        float mass;
+        float drag;
+        float friction;
 
-        bool b_isKinematic;
-        uint8_t collisionFlags;
+        bool is_kinematic;
+        uint8_t collision_flags;
     };
 
-    struct _HitBox
+    struct HitBoxComponent
     {
-        float f_width, f_height;
-        float f_offsetTransform_x, f_offsetTransform_y;
+        float width, height;
+        float offset_transform_x, offset_transform_y;
 
-        uint16_t collisionLayer, collisionMask;
+        uint16_t collision_layer, collision_mask;
     };
 }

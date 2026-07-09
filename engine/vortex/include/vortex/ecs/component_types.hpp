@@ -2,20 +2,20 @@
 
 #include <cstddef>
 
-namespace Vortex::Ecs
+namespace vortex::ecs
 {
-    using ComponentTypeID = size_t;
+    using ComponentTypeId = size_t;
 
-    inline ComponentTypeID GetUniqueID()
+    inline ComponentTypeId getUniqueId()
     {
-        static ComponentTypeID lastID = 0;
-        return lastID++;
+        static ComponentTypeId last_id = 0;
+        return last_id++;
     }
 
     template <typename T>
-    inline ComponentTypeID GetComponentTypeID()
+    inline ComponentTypeId getComponentTypeId()
     {
-        static const ComponentTypeID typeID = GetUniqueID();
-        return typeID;
+        static const ComponentTypeId type_id = getUniqueId();
+        return type_id;
     }
 }

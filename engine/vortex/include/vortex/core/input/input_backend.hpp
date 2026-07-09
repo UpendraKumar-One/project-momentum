@@ -1,30 +1,29 @@
 #pragma once
 
-namespace Vortex::Core::InputBackend
+namespace vortex::core::input_backend
 {
     enum class KeyCode
     {
-        UNKNOWN = 0,
+        Unknown = 0,
 
         A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z,
 
-        NUM_0, NUM_1, NUM_2, NUM_3, NUM_4, NUM_5, NUM_6, NUM_7, NUM_8, NUM_9,
+        Num0, Num1, Num2, Num3, Num4, Num5, Num6, Num7, Num8, Num9,
 
         F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12,
 
-        SPACE, ESC, ENTER, TAB, BACKSPACE, INSERT, DELETE_KEY,
-        ARROW_RIGHT, ARROW_LEFT, ARROW_DOWN, ARROW_UP, PAGE_UP, PAGE_DOWN, HOME, END,
-        CAPS_LOCK, SCROLL_LOCK, NUM_LOCK, PRINT_SCREEN, PAUSE_KEY,
-        LEFT_SHIFT, LEFT_CONTROL, LEFT_ALT, LEFT_SUPER,
-        RIGHT_SHIFT, RIGHT_CONTROL, RIGHT_ALT, RIGHT_SUPER,
+        Space, Esc, Enter, Tab, Backspace, Insert, DeleteKey,
+        ArrowRight, ArrowLeft, ArrowDown, ArrowUp, PageUp, PageDown, Home, End,
+        CapsLock, ScrollLock, NumLock, PrintScreen, PauseKey,
+        LeftShift, LeftControl, LeftAlt, LeftSuper,
+        RightShift, RightControl, RightAlt, RightSuper,
 
-        NUMPAD_0, NUMPAD_1, NUMPAD_2, NUMPAD_3, NUMPAD_4, NUMPAD_5, NUMPAD_6, NUMPAD_7, NUMPAD_8, NUMPAD_9,
-        NUMPAD_DECIMAL, NUMPAD_DIVIDE, NUMPAD_MULTIPLY, NUMPAD_SUBTRACT, NUMPAD_ADD, NUMPAD_ENTER, NUMPAD_EQUAL,
+        Numpad0, Numpad1, Numpad2, Numpad3, Numpad4, Numpad5, Numpad6, Numpad7, Numpad8, Numpad9,
+        NumpadDecimal, NumpadDivide, NumpadMultiply, NumpadSubtract, NumpadAdd, NumpadEnter, NumpadEqual,
 
-        APOSTROPHE, COMMA, HYPHEN, PLUS, PERIOD, FORWARD_SLASH, SEMICOLON, EQUAL, LEFT_BRACKET, BACKSLASH, RIGHT_BRACKET, TILDE
+        Apostrophe, Comma, Hyphen, Plus, Period, ForwardSlash, Semicolon, Equal, LeftBracket, Backslash, RightBracket, Tilde
     };
 
-    bool IsHardwareKeyPressed(KeyCode key);
-    bool IsHardwareKeyDown(KeyCode key);
-   
+    bool isHardwareKeyPressed(KeyCode key);
+    bool isHardwareKeyDown(KeyCode key);
 }

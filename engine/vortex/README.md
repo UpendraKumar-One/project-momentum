@@ -18,3 +18,14 @@ This document outlines the strict namespace architecture used throughout the Vor
 - `namespace Vortex::Core::InputBackend {}` # Contains the hardware abstraction layer for input processing (Hardware key mapping).
 - `namespace Vortex::Core::Math {}` # Contains mathematical primitives and geometry operations (e.g., Vector2, Rectangle).
 - `namespace Vortex::Core::Utilities {}` # Contains generic helper functions, algorithms, and engine utilities.
+
+
+# Naming Conventions followed throughout the project
+
+`Classes & Structs` : PascalCase	
+`Functions & Methods`	: camelCase	
+`Local Variables`	: snake_case  {For struct members too}
+`Member Variables` : m_camelCase
+`Constants & Macros` : UPPER_SNAKE_CASE
+`Enums` : PascalCase {Enum name as well as Values}
+`Namespaces` : snake_case

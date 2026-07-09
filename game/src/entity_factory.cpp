@@ -1,11 +1,11 @@
 #include "game/entity_factory.hpp"
-#include "engine/ecs/registry.hpp"
+#include "vortex/ecs/registry.hpp"
 
-namespace EntityFactory
+namespace entity_factory
 {
-    entity CreatePlayer(Registry& reg)
+    vortex::ecs::Entity createPlayer(vortex::ecs::Registry& reg)
     {
-        entity player = reg.CreateEntity();
+        vortex::ecs::Entity player = reg.createEntity();
 
 
         return player;

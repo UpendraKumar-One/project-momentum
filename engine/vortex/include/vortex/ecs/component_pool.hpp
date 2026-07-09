@@ -5,7 +5,7 @@
 #include <utility>
 #include <cassert>
 
-namespace Vortex::Ecs
+namespace vortex::ecs
 {
     namespace ComponentPoolConstants
     {
@@ -19,9 +19,9 @@ namespace Vortex::Ecs
 
         virtual size_t size() const = 0;
 
-        virtual void Remove(entity ent) = 0;
+        virtual void remove(Entity ent) = 0;
 
-        virtual const Core::VArray<uint16_t>& GetEntityList() const = 0;
+        virtual const vortex::core::VArray<uint16_t>& getEntityList() const = 0;
     };
 
     template <typename T>
@@ -32,96 +32,96 @@ namespace Vortex::Ecs
         {
             for (size_t i = 0; i < MAX_ENTITIES; ++i)
             {
-                v_sparseArray_.push_back(ComponentPoolConstants::NULL_INDEX);
+                m_sparseArray.push_back(ComponentPoolConstants::NULL_INDEX);
             }
         }
 
-        void Add(entity ent, const T &component)
+        void add(Entity ent, const T &component)
         {
-            uint16_t index = GetEntityIndex(ent);
-            if (v_sparseArray_[index] == ComponentPoolConstants::NULL_INDEX)
+            uint16_t index = getEntityIndex(ent);
+            if (m_sparseArray[index] == ComponentPoolConstants::NULL_INDEX)
             {
-                v_sparseArray_[index] = v_denseArray_.size();
-                v_denseArray_.push_back(component);
-                v_denseToSparse_.push_back(index);
+                m_sparseArray[index] = m_denseArray.size();
+                m_denseArray.push_back(component);
+                m_denseToSparse.push_back(index);
                 return;
             }
 
-            v_denseArray_[v_sparseArray_[index]] = component;
+            m_denseArray[m_sparseArray[index]] = component;
         }
 
-        void Add(entity ent, T &&component)
+        void add(Entity ent, T &&component)
         {
-            uint16_t index = GetEntityIndex(ent);
-            if (v_sparseArray_[index] == ComponentPoolConstants::NULL_INDEX)
+            uint16_t index = getEntityIndex(ent);
+            if (m_sparseArray[index] == ComponentPoolConstants::NULL_INDEX)
             {
-                v_sparseArray_[index] = v_denseArray_.size();
-                v_denseArray_.push_back(std::move(component));
-                v_denseToSparse_.push_back(index);
+                m_sparseArray[index] = m_denseArray.size();
+                m_denseArray.push_back(std::move(component));
+                m_denseToSparse.push_back(index);
                 return;
             }
 
-            v_denseArray_[v_sparseArray_[index]] = std::move(component);
+            m_denseArray[m_sparseArray[index]] = std::move(component);
         }
 
-        inline bool Has(entity ent)
+        inline bool has(Entity ent)
         {
-            return v_sparseArray_[GetEntityIndex(ent)] != ComponentPoolConstants::NULL_INDEX;
+            return m_sparseArray[getEntityIndex(ent)] != ComponentPoolConstants::NULL_INDEX;
         }
 
-        T &Get(entity ent)
+        T &get(Entity ent)
         {
-            assert(Has(ent) && "Provided entity doesn't have the component!");
+            assert(has(ent) && "Provided entity doesn't have the component!");
 
-            return v_denseArray_[v_sparseArray_[GetEntityIndex(ent)]];
+            return m_denseArray[m_sparseArray[getEntityIndex(ent)]];
         }
 
-        const T &Get(entity ent) const
+        const T &get(Entity ent) const
         {
-            assert(Has(ent) && "Provided entity doesn't have the component!");
+            assert(has(ent) && "Provided entity doesn't have the component!");
 
-            return v_denseArray_[v_sparseArray_[GetEntityIndex(ent)]];
+            return m_denseArray[m_sparseArray[getEntityIndex(ent)]];
         }
 
-        void Remove(entity ent) override
+        void remove(Entity ent) override
         {
-            if (!Has(ent))
+            if (!has(ent))
                 return;
 
-            uint16_t removed_index = GetEntityIndex(ent);
-            uint16_t last_index = v_denseToSparse_.back();
+            uint16_t removed_index = getEntityIndex(ent);
+            uint16_t last_index = m_denseToSparse.back();
 
-            if (v_sparseArray_[removed_index] != v_sparseArray_[last_index])
+            if (m_sparseArray[removed_index] != m_sparseArray[last_index])
             {
-                v_denseArray_[v_sparseArray_[removed_index]] = std::move(v_denseArray_.back());
-                v_denseToSparse_[v_sparseArray_[removed_index]] = last_index;
-                v_sparseArray_[last_index] = v_sparseArray_[removed_index];
+                m_denseArray[m_sparseArray[removed_index]] = std::move(m_denseArray.back());
+                m_denseToSparse[m_sparseArray[removed_index]] = last_index;
+                m_sparseArray[last_index] = m_sparseArray[removed_index];
             }
 
-            v_sparseArray_[removed_index] = ComponentPoolConstants::NULL_INDEX;
+            m_sparseArray[removed_index] = ComponentPoolConstants::NULL_INDEX;
 
-            v_denseArray_.pop_back();
-            v_denseToSparse_.pop_back();
+            m_denseArray.pop_back();
+            m_denseToSparse.pop_back();
         }
 
-        ComponentPool<T>* CastToType(void* ptr)
+        ComponentPool<T>* castToType(void* ptr)
         {
             return static_cast<ComponentPool<T>*>(ptr);
         }
 
         size_t size() const override
         {
-            return v_denseArray_.size();
+            return m_denseArray.size();
         }
 
-        const Core::VArray<uint16_t>& GetEntityList() const override
+        const core::VArray<uint16_t>& getEntityList() const override
         {
-            return v_denseToSparse_;
+            return m_denseToSparse;
         }
 
     private:
-        Core::VArray<uint16_t> v_sparseArray_{MAX_ENTITIES};
-        Core::VArray<uint16_t> v_denseToSparse_{MAX_ENTITIES};
-        Core::VArray<T> v_denseArray_{MAX_ENTITIES};
+        core::VArray<uint16_t> m_sparseArray{MAX_ENTITIES};
+        core::VArray<uint16_t> m_denseToSparse{MAX_ENTITIES};
+        core::VArray<T> m_denseArray{MAX_ENTITIES};
     };
 }

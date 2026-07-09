@@ -14,15 +14,15 @@ public:
 
 private:
 
-    void ProcessInput();
-    void PhysicsUpdate();
-    void Update(double);
-    void Render();
+    void processInput();
+    void physicsUpdate();
+    void update(double dt);
+    void render();
 
-    int i_PHYSICS_UPDATE_RATE_ = 60;
+    int m_physicsUpdateRate = 60;
 
-    bool b_isRunning_;
+    bool m_isRunning;
 
-    double f_targetTimeStep_;
-    double f_accumulator_;
+    double m_targetTimeStep;
+    double m_accumulator;
 };

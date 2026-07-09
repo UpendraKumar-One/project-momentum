@@ -2,39 +2,39 @@
 
 #include "vortex/core/input/input_backend.hpp"
 
-namespace Vortex::Core
+namespace vortex::core
 {
     struct Impl;
 
     enum class InputAction
     {
-        UP,
-        LEFT,
-        JUMP,
-        DOWN,
-        RIGHT,
-        QUIT
+        Up,
+        Left,
+        Jump,
+        Down,
+        Right,
+        Quit
     };
 
     class InputManager
     {
     public:
-        static InputManager &GetInstance()
+        static InputManager &getInstance()
         {
             static InputManager instance;
             return instance;
         }
 
-        void BindActionKey(InputAction action, InputBackend::KeyCode key);
+        void bindActionKey(InputAction action, input_backend::KeyCode key);
 
-        bool IsActionHeld(InputAction action) const;
+        bool isActionHeld(InputAction action) const;
 
-        bool IsActionPressed(InputAction action) const;
+        bool isActionPressed(InputAction action) const;
 
     private:
         InputManager();
         ~InputManager();
 
-        Impl *p_Impl;
+        Impl *m_impl;
     };
 }

@@ -2,11 +2,11 @@
 
 #include "raylib.h"
 #include <string>
-#include "lazy_array.hpp"
+#include "vortex/core/containers/vortex_array.hpp"
 
 struct TileSet
 {
-    int firstGID;
+    int first_gid;
     std::string name;
     int tile_height;
     int tile_width;

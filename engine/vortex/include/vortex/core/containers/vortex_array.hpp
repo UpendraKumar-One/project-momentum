@@ -6,16 +6,16 @@
 #include <type_traits>
 #include <utility>
 
-namespace Vortex::Core
+namespace vortex::core
 {
     template <typename T>
     class VArray
     {
     public:
         VArray(size_t cap)
-            : i_capacity_(cap), i_size_(0)
+            : m_capacity(cap), m_size(0)
         {
-            mem_rawBuffer_ = static_cast<T *>(::operator new(i_capacity_ * sizeof(T), std::align_val_t(alignof(T))));
+            m_rawBuffer = static_cast<T *>(::operator new(m_capacity * sizeof(T), std::align_val_t(alignof(T))));
         }
 
         VArray(const VArray &) = delete;
@@ -27,67 +27,67 @@ namespace Vortex::Core
         {
             if constexpr (!std::is_trivially_destructible_v<T>)
             {
-                for (size_t i = 0; i < i_size_; ++i)
+                for (size_t i = 0; i < m_size; ++i)
                 {
-                    mem_rawBuffer_[i].~T();
+                    m_rawBuffer[i].~T();
                 }
             }
-            ::operator delete(mem_rawBuffer_, std::align_val_t(alignof(T)));
+            ::operator delete(m_rawBuffer, std::align_val_t(alignof(T)));
         }
 
         T &push_back(const T &obj)
         {
-            assert((i_size_ < i_capacity_) && "Out of memory!");
-            if (i_size_ >= i_capacity_)
+            assert((m_size < m_capacity) && "Out of memory!");
+            if (m_size >= m_capacity)
                 throw std::bad_alloc();
 
-            T *instantiated_obj = ::new (&mem_rawBuffer_[i_size_]) T(obj);
-            ++i_size_;
+            T *instantiated_obj = ::new (&m_rawBuffer[m_size]) T(obj);
+            ++m_size;
 
             return *instantiated_obj;
         }
 
         T &push_back(T &&obj)
         {
-            assert((i_size_ < i_capacity_) && "Out of memory!");
-            if (i_size_ >= i_capacity_)
+            assert((m_size < m_capacity) && "Out of memory!");
+            if (m_size >= m_capacity)
                 throw std::bad_alloc();
 
-            T *instantiated_obj = ::new (&mem_rawBuffer_[i_size_]) T(std::move(obj));
-            ++i_size_;
+            T *instantiated_obj = ::new (&m_rawBuffer[m_size]) T(std::move(obj));
+            ++m_size;
 
             return *instantiated_obj;
         }
 
         void pop_back()
         {
-            assert((i_size_ > 0) && "Empty Array!");
+            assert((m_size > 0) && "Empty Array!");
             if constexpr (!std::is_trivially_destructible_v<T>)
             {
-                mem_rawBuffer_[--i_size_].~T();
+                m_rawBuffer[--m_size].~T();
             }
         }
 
         const T &operator[](size_t i) const
         {
-            assert(i < i_size_ && "index out of range!");
-            return mem_rawBuffer_[i];
+            assert(i < m_size && "index out of range!");
+            return m_rawBuffer[i];
         }
 
         T &operator[](size_t i)
         {
-            assert(i < i_size_ && "index out of range!");
-            return mem_rawBuffer_[i];
+            assert(i < m_size && "index out of range!");
+            return m_rawBuffer[i];
         }
 
         size_t size() const
         {
-            return i_size_;
+            return m_size;
         }
 
         size_t capacity() const
         {
-            return i_capacity_;
+            return m_capacity;
         }
 
         struct Iterator
@@ -141,22 +141,22 @@ namespace Vortex::Core
 
         Iterator begin()
         {
-            return Iterator(&mem_rawBuffer_[0]);
+            return Iterator(&m_rawBuffer[0]);
         }
 
         Iterator end()
         {
-            return Iterator(&mem_rawBuffer_[i_size_]);
+            return Iterator(&m_rawBuffer[m_size]);
         }
 
         T &back()
         {
-            return mem_rawBuffer_[i_size_ - 1];
+            return m_rawBuffer[m_size - 1];
         }
 
     private:
-        size_t i_capacity_;
-        size_t i_size_;
-        T *mem_rawBuffer_;
+        size_t m_capacity;
+        size_t m_size;
+        T *m_rawBuffer;
     };
 }

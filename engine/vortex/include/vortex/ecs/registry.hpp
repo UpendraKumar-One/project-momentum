@@ -10,7 +10,7 @@
 #include "vortex/components/physics_components.hpp"
 #include <memory>
 
-namespace Vortex::Ecs
+namespace vortex::ecs
 {
     constexpr size_t MAX_NUMBER_OF_COMPONENTS = 10;
 
@@ -19,112 +19,112 @@ namespace Vortex::Ecs
     public:
         Registry()
         {
-            for (size_t i = 0; i < v_componentPools_.capacity(); ++i)
+            for (size_t i = 0; i < m_componentPools.capacity(); ++i)
             {
-                v_componentPools_.push_back(nullptr);
+                m_componentPools.push_back(nullptr);
             }
         }
 
         template <typename... Comps>
-        ComponentView<Comps...> GetView()
+        ComponentView<Comps...> getView()
         {
-            return ComponentView<Comps...>(GetPool<Comps>()...);
+            return ComponentView<Comps...>(getPool<Comps>()...);
         }
 
-        entity CreateEntity()
+        Entity createEntity()
         {
-            return ent_manager_.Create();
+            return m_entityManager.create();
         }
 
-        void DestroyEntity(entity ent)
+        void destroyEntity(Entity ent)
         {
             for(size_t i = 0; i < MAX_NUMBER_OF_COMPONENTS; ++i)
             {
-                if(v_componentPools_[i])
+                if(m_componentPools[i])
                 {
-                    v_componentPools_[i]->Remove(ent);
+                    m_componentPools[i]->remove(ent);
                 }
             }
 
-            ent_manager_.Destroy(ent);
+            m_entityManager.destroy(ent);
         }
 
         template <typename T>
-        void AddComponent(entity ent, const T &comp)
+        void addComponent(Entity ent, const T &comp)
         {
-            EnsurePool<T>()->Add(ent, comp);
+            ensurePool<T>()->add(ent, comp);
         }
 
         template <typename T>
-        void AddComponent(entity ent, T &&comp)
+        void addComponent(Entity ent, T &&comp)
         {
-            EnsurePool<T>()->Add(ent, std::move(comp));
+            ensurePool<T>()->add(ent, std::move(comp));
         }
 
         template <typename T>
-        void RemoveComponent(entity ent)
+        void removeComponent(Entity ent)
         {
-            ComponentPool<T> *pool_ptr = GetPool<T>();
+            ComponentPool<T> *pool_ptr = getPool<T>();
             if (pool_ptr)
-                pool_ptr->Remove(ent);
+                pool_ptr->remove(ent);
         }
 
         template <typename T>
-        bool HasComponent(entity ent) const
+        bool hasComponent(Entity ent) const
         {
-            ComponentPool<T> *pool_ptr = GetPool<T>();
+            ComponentPool<T> *pool_ptr = getPool<T>();
             if (pool_ptr)
-                return pool_ptr->Has(ent);
+                return pool_ptr->has(ent);
 
             return false;
         }
 
         template <typename T>
-        T &GetComponent(entity ent)
+        T &getComponent(Entity ent)
         {
-            ComponentPool<T> *pool_ptr = GetPool<T>();
+            ComponentPool<T> *pool_ptr = getPool<T>();
             assert(pool_ptr && "No such pool in scope!");
-            return pool_ptr->Get(ent);
+            return pool_ptr->get(ent);
         }
 
         template <typename T>
-        const T &GetComponent(entity ent) const
+        const T &getComponent(Entity ent) const
         {
-            ComponentPool<T> *pool_ptr = GetPool<T>();
+            ComponentPool<T> *pool_ptr = getPool<T>();
             assert(pool_ptr && "No such pool in scope!");
-            return pool_ptr->Get(ent);
+            return pool_ptr->get(ent);
         }
 
     private:
         template <typename T>
-        void RegisterComponent(ComponentTypeID typeID)
+        void registerComponent(ComponentTypeId type_id)
         {
-            v_componentPools_[typeID] = std::make_unique<ComponentPool<T>>();
+            m_componentPools[type_id] = std::make_unique<ComponentPool<T>>();
         }
 
         template <typename T>
-        ComponentPool<T> *EnsurePool()
+        ComponentPool<T> *ensurePool()
         {
-            ComponentTypeID typeID = GetComponentTypeID<T>();
-            if (!v_componentPools_[typeID])
-                RegisterComponent<T>(typeID);
+            ComponentTypeId type_id = getComponentTypeId<T>();
+            if (!m_componentPools[type_id])
+                registerComponent<T>(type_id);
 
-            ComponentPool<T> *pool_ptr = static_cast<ComponentPool<T> *>(v_componentPools_[typeID].get());
+            ComponentPool<T> *pool_ptr = static_cast<ComponentPool<T> *>(m_componentPools[type_id].get());
 
             return pool_ptr;
         }
 
         template <typename T>
-        ComponentPool<T> *GetPool() const
+        ComponentPool<T> *getPool() const
         {
-            ComponentTypeID typeID = GetComponentTypeID<T>();
+            ComponentTypeId type_id = getComponentTypeId<T>();
 
-            ComponentPool<T> *pool_ptr = static_cast<ComponentPool<T> *>(v_componentPools_[typeID].get());
+            ComponentPool<T> *pool_ptr = static_cast<ComponentPool<T> *>(m_componentPools[type_id].get());
 
             return pool_ptr;
         }
 
-        EntityManager ent_manager_;
-        Core::VArray<std::unique_ptr<IPool>> v_componentPools_{MAX_NUMBER_OF_COMPONENTS};
+        EntityManager m_entityManager;
+        core::VArray<std::unique_ptr<IPool>> m_componentPools{MAX_NUMBER_OF_COMPONENTS};
     };
 }

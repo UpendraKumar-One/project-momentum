@@ -1,8 +1,10 @@
 #pragma once
 
-#include "engine/ecs/entity.hpp"
+#include "vortex/ecs/entity.hpp"
 
-namespace EntityFactory
+namespace vortex::ecs { class Registry; }
+
+namespace entity_factory
 {
-    entity CreatePlayer();
+    vortex::ecs::Entity createPlayer(vortex::ecs::Registry& reg);
 }

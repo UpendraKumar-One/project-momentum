@@ -2,9 +2,9 @@
 
 #include <cstdint>
 
-namespace Vortex::Ecs
+namespace vortex::ecs
 {
-    using entity = uint16_t;
+    using Entity = uint16_t;
 
     constexpr uint16_t INDEX_BITS = 12;
     constexpr uint16_t INDEX_MASK = (1 << INDEX_BITS) - 1;
@@ -14,17 +14,17 @@ namespace Vortex::Ecs
 
     constexpr uint16_t MAX_ENTITIES = 0x1000;
 
-    inline uint16_t GetEntityIndex(entity ent)
+    inline uint16_t getEntityIndex(Entity ent)
     {
         return ent & INDEX_MASK;
     }
 
-    inline uint16_t GetEntityGeneration(entity ent)
+    inline uint16_t getEntityGeneration(Entity ent)
     {
         return (ent & GENERATION_MASK) >> INDEX_BITS;
     }
 
-    inline entity GenerateEntity(uint16_t index, uint16_t generation)
+    inline Entity generateEntity(uint16_t index, uint16_t generation)
     {
         return (generation << INDEX_BITS) | index;
     }

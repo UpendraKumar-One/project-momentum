@@ -1,18 +1,18 @@
 #pragma once
 
-namespace Vortex::Ecs {
+namespace vortex::ecs {
     class Registry;
 }
 
-namespace Vortex::Systems
+namespace vortex::systems
 {
     class PhysicsSystem
     {
     public:
         PhysicsSystem(float gravity);
-        void update(Vortex::Ecs::Registry& reg, float dt);
+        void update(ecs::Registry& reg, float dt);
 
     private:
-        float GRAVITY;
+        float m_gravity;
     };
 }

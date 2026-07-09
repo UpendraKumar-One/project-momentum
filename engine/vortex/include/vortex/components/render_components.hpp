@@ -2,16 +2,16 @@
 
 #include "raylib.h"
 
-namespace Vortex::Components
+namespace vortex::components
 {
-    struct _Sprite
+    struct SpriteComponent
     {
-        Texture2D* imgTexture;
+        Texture2D* img_texture;
 
-        Rectangle srcRectangle;
+        Rectangle src_rectangle;
 
         Color tint;
 
-        int i_zIndex;
+        int z_index;
     };
 }

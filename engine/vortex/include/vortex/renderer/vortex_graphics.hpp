@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Vortex::Renderer
+namespace vortex::renderer
 {
     struct Color
     {

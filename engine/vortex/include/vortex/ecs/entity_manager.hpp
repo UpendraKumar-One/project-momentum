@@ -3,7 +3,7 @@
 #include "vortex/ecs/entity.hpp"
 #include <bitset>
 
-namespace Vortex::Ecs
+namespace vortex::ecs
 {
     class EntityManager
     {
@@ -12,15 +12,15 @@ namespace Vortex::Ecs
         EntityManager();
         ~EntityManager();
 
-        entity Create();
-        void Destroy(entity);
-        bool IsActive(entity);
+        Entity create();
+        void destroy(Entity ent);
+        bool isActive(Entity ent);
 
     private:
-        int i_entitiesLeft_;
-        uint16_t i_activeEntities_;
-        uint16_t i_nextFreeEntity_;
-        uint16_t* v_entities_;
-        std::bitset<0x1000> b_isActiveFlags_;
+        int m_entitiesLeft;
+        uint16_t m_activeEntities;
+        uint16_t m_nextFreeEntity;
+        uint16_t* m_entities;
+        std::bitset<0x1000> m_isActiveFlags;
     };
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Vortex::Core::Math
+namespace vortex::core::math
 {
     struct Vector2D
     {

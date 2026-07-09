@@ -1,94 +1,94 @@
 #include "game/application.hpp"
-#include "engine/core/input_manager.hpp"
+#include "vortex/core/input_manager.hpp"
 #include "raylib.h"
-#include "engine/ecs/registry.hpp"
+#include "vortex/ecs/registry.hpp"
 #include "game/entity_factory.hpp"
 
 Application::Application()
-    : b_isRunning_(true), f_targetTimeStep_(1.0f / i_PHYSICS_UPDATE_RATE_), f_accumulator_(0.0f)
+    : m_isRunning(true), m_targetTimeStep(1.0 / m_physicsUpdateRate), m_accumulator(0.0)
 {
     SetConfigFlags(FLAG_WINDOW_HIDDEN | FLAG_WINDOW_HIGHDPI | FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT);
 
     InitAudioDevice();
     InitWindow(800, 600, "Project-Momentum");
 
-    int i_monitor = GetCurrentMonitor();
-    int i_screenWidth = GetMonitorWidth(i_monitor);
-    int i_screenHeight = GetMonitorHeight(i_monitor);
-    int i_refreshRate = GetMonitorRefreshRate(i_monitor);
+    int monitor = GetCurrentMonitor();
+    int screen_width = GetMonitorWidth(monitor);
+    int screen_height = GetMonitorHeight(monitor);
+    int refresh_rate = GetMonitorRefreshRate(monitor);
 
-    SetWindowSize(i_screenWidth, i_screenHeight);
+    SetWindowSize(screen_width, screen_height);
     SetWindowPosition(0, 0);
 
     ClearWindowState(FLAG_WINDOW_HIDDEN);
 
     SetWindowState(FLAG_FULLSCREEN_MODE);
 
-    if (i_refreshRate > 0)
-        SetTargetFPS(i_refreshRate);
+    if (refresh_rate > 0)
+        SetTargetFPS(refresh_rate);
     else
         SetTargetFPS(60);
 }
 
 Application::~Application()
 {
-    b_isRunning_ = false;
+    m_isRunning = false;
     CloseAudioDevice();
     CloseWindow();
 }
 
 void Application::run()
 {
-    double f_prevTime = GetTime();
+    double prev_time = GetTime();
 
-    while (b_isRunning_ && !WindowShouldClose())
+    while (m_isRunning && !WindowShouldClose())
     {
-        double f_currentTime = GetTime();
-        double dt = f_currentTime - f_prevTime;
-        f_prevTime = f_currentTime;
+        double current_time = GetTime();
+        double dt = current_time - prev_time;
+        prev_time = current_time;
 
-        if (dt > 0.25f)
+        if (dt > 0.25)
             dt = 0.25;
 
-        f_accumulator_ += dt;
+        m_accumulator += dt;
 
-        ProcessInput();
+        processInput();
 
-        while (f_accumulator_ > f_targetTimeStep_)
+        while (m_accumulator > m_targetTimeStep)
         {
-            PhysicsUpdate();
-            f_accumulator_ -= f_targetTimeStep_;
+            physicsUpdate();
+            m_accumulator -= m_targetTimeStep;
         }
 
-        Update(dt);
-        Render();
+        update(dt);
+        render();
     }
 }
 
-void Application::ProcessInput()
+void Application::processInput()
 {
-    InputManager &input = InputManager::GetInstance();
+    vortex::core::InputManager &input = vortex::core::InputManager::getInstance();
 
-    if (input.IsActionPressed(InputAction::QUIT))
+    if (input.isActionPressed(vortex::core::InputAction::Quit))
     {
-        b_isRunning_ = false;
+        m_isRunning = false;
     }
 
-    if (input.IsActionPressed(InputAction::JUMP))
+    if (input.isActionPressed(vortex::core::InputAction::Jump))
     {
         DrawText("Jump Pressed", 500, 500, 20, WHITE);
     }
 }
 
-void Application::PhysicsUpdate()
+void Application::physicsUpdate()
 {
 }
 
-void Application::Update(double dt)
+void Application::update(double dt)
 {
 }
 
-void Application::Render()
+void Application::render()
 {
     BeginDrawing();
     ClearBackground(BLACK);
