@@ -19,16 +19,16 @@ namespace vortex::ecs
 
         virtual size_t size() const = 0;
 
-        virtual void remove(Entity ent) = 0;
+        virtual void remove(VxEntity ent) = 0;
 
-        virtual const vortex::core::VArray<uint16_t>& getEntityList() const = 0;
+        virtual const vortex::containers::VxArray<uint16_t>& getEntityList() const = 0;
     };
 
     template <typename T>
-    class ComponentPool : public IPool
+    class VxComponentPool : public IPool
     {
     public:
-        ComponentPool()
+        VxComponentPool()
         {
             for (size_t i = 0; i < MAX_ENTITIES; ++i)
             {
@@ -36,7 +36,7 @@ namespace vortex::ecs
             }
         }
 
-        void add(Entity ent, const T &component)
+        void add(VxEntity ent, const T &component)
         {
             uint16_t index = getEntityIndex(ent);
             if (m_sparseArray[index] == ComponentPoolConstants::NULL_INDEX)
@@ -50,7 +50,7 @@ namespace vortex::ecs
             m_denseArray[m_sparseArray[index]] = component;
         }
 
-        void add(Entity ent, T &&component)
+        void add(VxEntity ent, T &&component)
         {
             uint16_t index = getEntityIndex(ent);
             if (m_sparseArray[index] == ComponentPoolConstants::NULL_INDEX)
@@ -64,26 +64,26 @@ namespace vortex::ecs
             m_denseArray[m_sparseArray[index]] = std::move(component);
         }
 
-        inline bool has(Entity ent)
+        inline bool has(VxEntity ent)
         {
             return m_sparseArray[getEntityIndex(ent)] != ComponentPoolConstants::NULL_INDEX;
         }
 
-        T &get(Entity ent)
+        T &get(VxEntity ent)
         {
             assert(has(ent) && "Provided entity doesn't have the component!");
 
             return m_denseArray[m_sparseArray[getEntityIndex(ent)]];
         }
 
-        const T &get(Entity ent) const
+        const T &get(VxEntity ent) const
         {
             assert(has(ent) && "Provided entity doesn't have the component!");
 
             return m_denseArray[m_sparseArray[getEntityIndex(ent)]];
         }
 
-        void remove(Entity ent) override
+        void remove(VxEntity ent) override
         {
             if (!has(ent))
                 return;
@@ -104,9 +104,9 @@ namespace vortex::ecs
             m_denseToSparse.pop_back();
         }
 
-        ComponentPool<T>* castToType(void* ptr)
+        VxComponentPool<T>* castToType(void* ptr)
         {
-            return static_cast<ComponentPool<T>*>(ptr);
+            return static_cast<VxComponentPool<T>*>(ptr);
         }
 
         size_t size() const override
@@ -114,14 +114,14 @@ namespace vortex::ecs
             return m_denseArray.size();
         }
 
-        const core::VArray<uint16_t>& getEntityList() const override
+        const containers::VxArray<uint16_t>& getEntityList() const override
         {
             return m_denseToSparse;
         }
 
     private:
-        core::VArray<uint16_t> m_sparseArray{MAX_ENTITIES};
-        core::VArray<uint16_t> m_denseToSparse{MAX_ENTITIES};
-        core::VArray<T> m_denseArray{MAX_ENTITIES};
+        containers::VxArray<uint16_t> m_sparseArray{MAX_ENTITIES};
+        containers::VxArray<uint16_t> m_denseToSparse{MAX_ENTITIES};
+        containers::VxArray<T> m_denseArray{MAX_ENTITIES};
     };
 }

@@ -1,8 +1,8 @@
 #pragma once
 
-namespace vortex::core::input_backend
+namespace vortex::input
 {
-    enum class KeyCode
+    enum class EKeyCode
     {
         Unknown = 0,
 
@@ -24,6 +24,6 @@ namespace vortex::core::input_backend
         Apostrophe, Comma, Hyphen, Plus, Period, ForwardSlash, Semicolon, Equal, LeftBracket, Backslash, RightBracket, Tilde
     };
 
-    bool isHardwareKeyPressed(KeyCode key);
-    bool isHardwareKeyDown(KeyCode key);
+    bool isHardwareKeyPressed(EKeyCode key);
+    bool isHardwareKeyDown(EKeyCode key);
 }

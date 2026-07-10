@@ -3,59 +3,65 @@
 #include <algorithm>
 #include <cmath>
 
+using namespace vortex;
+
 namespace vortex::systems
 {
-    PhysicsSystem::PhysicsSystem(float gravity)
+    VxPhysicsSystem::VxPhysicsSystem(float gravity)
         : m_gravity(gravity)
     {
     }
 
-    void PhysicsSystem::update(ecs::Registry& reg, float dt)
+    void VxPhysicsSystem::dynamicsUpdate(ecs::VxRegistry& reg, float dt)
     {
-        auto physics_view = reg.getView<components::TransformComponent, components::RigidBodyComponent>();
+        auto dynamics_view = reg.getView<components::VxDynamicsComponent, components::VxVelocityComponent>();
 
-        for(ecs::Entity ent : physics_view)
+        for(ecs::VxEntity ent : dynamics_view)
         {
-            auto& transform = reg.getComponent<components::TransformComponent>(ent);
-            auto& rigid_body = reg.getComponent<components::RigidBodyComponent>(ent);
+            auto& dynamics = reg.getComponent<components::VxDynamicsComponent>(ent);
+            auto& velocity = reg.getComponent<components::VxVelocityComponent>(ent);
 
-            if(rigid_body.is_kinematic) // for entities that don't follow standard physics
-                continue;
+            // Add gravity force to the accumulator
+            dynamics.net_force_y += (m_gravity * dynamics.gravity_scale * dynamics.mass);
 
+            // Calculate Acceleration (a = F * 1/m)
+            float accel_x = dynamics.net_force_x * dynamics.inv_mass;
+            float accel_y = dynamics.net_force_y * dynamics.inv_mass;
+
+            // Add to Velocity (v = v + a*dt)
+            velocity.x += accel_x * dt;
+            velocity.y += accel_y * dt;
+
+            // Apply universal damping (drag/air resistance)
+            velocity.x *= (1.0f - (dynamics.linear_damping * dt));
+            velocity.y *= (1.0f - (dynamics.linear_damping * dt));
+
+            // Clamp to max velocity
+            velocity.x = std::clamp(velocity.x, -velocity.max_x, velocity.max_x);
+            velocity.y = std::clamp(velocity.y, -velocity.max_y, velocity.max_y);
+
+            // Reset the accumulator for the next frame
+            dynamics.net_force_x = 0.0f;
+            dynamics.net_force_y = 0.0f;
+        }
+    }
+
+    void VxPhysicsSystem::kinematicsUpdate(ecs::VxRegistry& reg, float dt)
+    {
+        auto movement_view = reg.getView<components::VxTransformComponent, components::VxVelocityComponent>();
+
+        for(ecs::VxEntity ent : movement_view)
+        {
+            auto& transform = reg.getComponent<components::VxTransformComponent>(ent);
+            auto& velocity = reg.getComponent<components::VxVelocityComponent>(ent);
+
+            // Store previous position for rendering interpolation or swept collision fallback
             transform.prev_x = transform.x;
             transform.prev_y = transform.y;
 
-            rigid_body.velocity_x += (rigid_body.acceleration_x) * dt;
-            rigid_body.velocity_y += (m_gravity * rigid_body.gravity_scale + rigid_body.acceleration_y) * dt;
-
-            if((rigid_body.collision_flags & components::TouchingDown) && (rigid_body.velocity_x != 0.0f))
-            {
-                float friction_step = rigid_body.friction * m_gravity * dt;
-
-                if(std::abs(rigid_body.velocity_x) <= friction_step)
-                    rigid_body.velocity_x = 0.0f;
-
-                else
-                {
-                    short int sign = (rigid_body.velocity_x > 0.0f)? 1 : -1;
-                    rigid_body.velocity_x -= sign * friction_step;
-                }
-            }
-
-            if(rigid_body.collision_flags == components::None)
-            {
-                rigid_body.velocity_x *= (1.0f - (rigid_body.drag * dt));
-                rigid_body.velocity_y *= (1.0f - (rigid_body.drag * dt));
-            }
-
-            rigid_body.velocity_x = std::clamp(rigid_body.velocity_x, -rigid_body.max_velocity_x, rigid_body.max_velocity_x);
-            rigid_body.velocity_y = std::clamp(rigid_body.velocity_y, -rigid_body.max_velocity_y, rigid_body.max_velocity_y);
-
-            transform.x += rigid_body.velocity_x * dt;
-            transform.y += rigid_body.velocity_y * dt;
-
-            rigid_body.acceleration_x = 0.0f;
-            rigid_body.acceleration_y = 0.0f;
+            // Apply final, collision-checked velocity to transform
+            transform.x += velocity.x * dt;
+            transform.y += velocity.y * dt;
         }
     }
 }

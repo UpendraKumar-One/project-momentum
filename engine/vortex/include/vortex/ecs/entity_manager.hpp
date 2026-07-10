@@ -5,16 +5,16 @@
 
 namespace vortex::ecs
 {
-    class EntityManager
+    class VxEntityManager
     {
     public:
 
-        EntityManager();
-        ~EntityManager();
+        VxEntityManager();
+        ~VxEntityManager();
 
-        Entity create();
-        void destroy(Entity ent);
-        bool isActive(Entity ent);
+        VxEntity create();
+        void destroy(VxEntity ent);
+        bool isActive(VxEntity ent);
 
     private:
         int m_entitiesLeft;

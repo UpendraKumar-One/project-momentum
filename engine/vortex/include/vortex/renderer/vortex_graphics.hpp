@@ -2,12 +2,12 @@
 
 namespace vortex::renderer
 {
-    struct Color
+    struct VxColor
     {
         unsigned char r, g, b, a;
     };
 
-    struct Texture2D
+    struct VxTexture
     {
         unsigned int id;
         int width, height;

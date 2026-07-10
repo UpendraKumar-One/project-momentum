@@ -3,7 +3,7 @@
 
 namespace vortex::ecs
 {
-    EntityManager::EntityManager()
+    VxEntityManager::VxEntityManager()
         : m_activeEntities(0), m_nextFreeEntity(0), m_entitiesLeft(0x10000)
     {
         m_isActiveFlags.reset();
@@ -17,15 +17,15 @@ namespace vortex::ecs
         m_entities[0xFFF] = 0xFFF;
     }
 
-    EntityManager::~EntityManager()
+    VxEntityManager::~VxEntityManager()
     {
         delete[] m_entities;
     }
 
-    Entity EntityManager::create()
+    VxEntity VxEntityManager::create()
     {
-        assert(m_entitiesLeft > 0 && "Entity pool exhausted");
-        assert(m_activeEntities <= 0x1000 && "Entity pool exhausted");
+        assert(m_entitiesLeft > 0 && "VxEntity pool exhausted");
+        assert(m_activeEntities <= 0x1000 && "VxEntity pool exhausted");
         uint16_t index = m_nextFreeEntity, gen = getEntityGeneration(m_entities[m_nextFreeEntity]);
         m_nextFreeEntity = getEntityIndex(m_entities[m_nextFreeEntity]);
         m_isActiveFlags.set(index);
@@ -35,7 +35,7 @@ namespace vortex::ecs
         return generateEntity(index, gen);
     }
 
-    void EntityManager::destroy(Entity ent)
+    void VxEntityManager::destroy(VxEntity ent)
     {
         if (!isActive(ent))
             return;
@@ -55,7 +55,7 @@ namespace vortex::ecs
         }
     }
 
-    bool EntityManager::isActive(Entity ent)
+    bool VxEntityManager::isActive(VxEntity ent)
     {
         uint16_t provided_index = getEntityIndex(ent);
         uint16_t provided_generation = getEntityGeneration(ent);

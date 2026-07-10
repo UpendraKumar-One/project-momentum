@@ -2,8 +2,8 @@
 
 #include <unordered_map>
 
-namespace vortex::core::containers
+namespace vortex::containers
 {
     template <typename K, typename V>
-    using HashMap = std::unordered_map<K, V>;
+    using VHashMap = std::unordered_map<K, V>;
 }

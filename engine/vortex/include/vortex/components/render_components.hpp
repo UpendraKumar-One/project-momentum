@@ -1,16 +1,16 @@
 #pragma once
 
-#include "raylib.h"
-
+#include "vortex/renderer/vortex_graphics.hpp"
+#include "vortex/core/math/vortex_math.hpp"
 namespace vortex::components
 {
-    struct SpriteComponent
+    struct VxSpriteComponent
     {
-        Texture2D* img_texture;
+        renderer::VxTexture* img_texture;
 
-        Rectangle src_rectangle;
+        math::VxRect src_rectangle;
 
-        Color tint;
+        renderer::VxColor tint;
 
         int z_index;
     };

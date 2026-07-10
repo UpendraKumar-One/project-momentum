@@ -1,13 +1,13 @@
 #pragma once
 
-namespace vortex::core::math
+namespace vortex::math
 {
-    struct Vector2D
+    struct VxVec2
     {
         float x, y;
     };
 
-    struct Rectangle
+    struct VxRect
     {
         float x, y;
         float width, height;

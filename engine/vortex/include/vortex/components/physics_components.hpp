@@ -4,7 +4,7 @@
 
 namespace vortex::components
 {
-    enum CollisionFlags : uint8_t
+    enum ECollisionFlags : uint8_t
     {
         None = 0,
         TouchingUp = 1 << 0,
@@ -13,34 +13,40 @@ namespace vortex::components
         TouchingRight = 1 << 3
     };
 
-    struct TransformComponent
+    struct VxTransformComponent
     {
         float x, y;
         float prev_x, prev_y;
         float rotation;
     };
 
-    struct RigidBodyComponent
+    struct VxVelocityComponent
     {
-        float gravity_scale;
-
-        float velocity_x, velocity_y;
-        float max_velocity_x, max_velocity_y;
-        float acceleration_x, acceleration_y;
-
-        float mass;
-        float drag;
-        float friction;
-
-        bool is_kinematic;
-        uint8_t collision_flags;
+        float x, y;
+        float max_x, max_y;
     };
 
-    struct HitBoxComponent
+    struct VxDynamicsComponent
+    {
+        float net_force_x, net_force_y;
+
+        float mass;
+        float inv_mass;
+        
+        float linear_damping;
+        float gravity_scale;
+    };
+
+    struct VxHitBoxComponent
     {
         float width, height;
         float offset_transform_x, offset_transform_y;
 
         uint16_t collision_layer, collision_mask;
+    };
+
+    struct VxCollisionStateComponent
+    {
+        uint8_t collision_flags;
     };
 }

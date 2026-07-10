@@ -2,11 +2,11 @@
 
 #include "vortex/core/input/input_backend.hpp"
 
-namespace vortex::core
+namespace vortex::input
 {
     struct Impl;
 
-    enum class InputAction
+    enum class EInputAction
     {
         Up,
         Left,
@@ -16,24 +16,24 @@ namespace vortex::core
         Quit
     };
 
-    class InputManager
+    class VxInputManager
     {
     public:
-        static InputManager &getInstance()
+        static VxInputManager &getInstance()
         {
-            static InputManager instance;
+            static VxInputManager instance;
             return instance;
         }
 
-        void bindActionKey(InputAction action, input_backend::KeyCode key);
+        void bindActionKey(EInputAction action, EKeyCode key);
 
-        bool isActionHeld(InputAction action) const;
+        bool isActionHeld(EInputAction action) const;
 
-        bool isActionPressed(InputAction action) const;
+        bool isActionPressed(EInputAction action) const;
 
     private:
-        InputManager();
-        ~InputManager();
+        VxInputManager();
+        ~VxInputManager();
 
         Impl *m_impl;
     };

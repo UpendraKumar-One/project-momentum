@@ -1,54 +1,33 @@
-#include "game/application.hpp"
-#include "vortex/core/input_manager.hpp"
-#include "raylib.h"
-#include "vortex/ecs/registry.hpp"
-#include "game/entity_factory.hpp"
+#include "application.hpp"
+#include "vortex/core/input/input_manager.hpp"
+#include "vortex/renderer/renderer_backend.hpp"
+#include "vortex/renderer/render_queue.hpp"
+#include "vortex/core/utilities/vortex_time.hpp"
+#include "entity_factory.hpp"
+
+using namespace vortex;
 
 Application::Application()
     : m_isRunning(true), m_targetTimeStep(1.0 / m_physicsUpdateRate), m_accumulator(0.0)
 {
-    SetConfigFlags(FLAG_WINDOW_HIDDEN | FLAG_WINDOW_HIGHDPI | FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT);
-
-    InitAudioDevice();
-    InitWindow(800, 600, "Project-Momentum");
-
-    int monitor = GetCurrentMonitor();
-    int screen_width = GetMonitorWidth(monitor);
-    int screen_height = GetMonitorHeight(monitor);
-    int refresh_rate = GetMonitorRefreshRate(monitor);
-
-    SetWindowSize(screen_width, screen_height);
-    SetWindowPosition(0, 0);
-
-    ClearWindowState(FLAG_WINDOW_HIDDEN);
-
-    SetWindowState(FLAG_FULLSCREEN_MODE);
-
-    if (refresh_rate > 0)
-        SetTargetFPS(refresh_rate);
-    else
-        SetTargetFPS(60);
+    renderer::backend::initWindow(800, 600, "Project-Momentum");
 }
 
 Application::~Application()
 {
     m_isRunning = false;
-    CloseAudioDevice();
-    CloseWindow();
+    // CloseAudioDevice();
+    renderer::backend::closeWindow();
 }
 
 void Application::run()
 {
-    double prev_time = GetTime();
+    utils::VxTime::init();
 
-    while (m_isRunning && !WindowShouldClose())
+    while (m_isRunning && !renderer::backend::shouldClose())
     {
-        double current_time = GetTime();
-        double dt = current_time - prev_time;
-        prev_time = current_time;
-
-        if (dt > 0.25)
-            dt = 0.25;
+        utils::VxTime::update();
+        double dt = utils::VxTime::getDeltaTime();
 
         m_accumulator += dt;
 
@@ -67,16 +46,16 @@ void Application::run()
 
 void Application::processInput()
 {
-    vortex::core::InputManager &input = vortex::core::InputManager::getInstance();
+    input::VxInputManager &input = input::VxInputManager::getInstance();
 
-    if (input.isActionPressed(vortex::core::InputAction::Quit))
+    if (input.isActionPressed(input::EInputAction::Quit))
     {
         m_isRunning = false;
     }
 
-    if (input.isActionPressed(vortex::core::InputAction::Jump))
+    if (input.isActionPressed(input::EInputAction::Jump))
     {
-        DrawText("Jump Pressed", 500, 500, 20, WHITE);
+        // DrawText("Jump Pressed", 500, 500, 20, WHITE); // TODO: Reimplement Text Rendering in Queue
     }
 }
 
@@ -90,9 +69,21 @@ void Application::update(double dt)
 
 void Application::render()
 {
-    BeginDrawing();
-    ClearBackground(BLACK);
+    renderer::backend::beginFrame();
+    
+    // Clear Screen Command
+    renderer::VxRenderQueue queue;
+    renderer::RenderCommand clearCmd;
+    clearCmd.type = renderer::ERenderCommandType::ClearScreen;
+    clearCmd.data.clear.color = {0, 0, 0, 255}; // BLACK
+    queue.submit(clearCmd);
 
-    DrawFPS(400, 500);
-    EndDrawing();
+    // TODO: Iterate over VxSpriteComponent and generate commands here, then push to queue
+
+    queue.sort();
+    renderer::backend::executeQueue(queue);
+
+    // DrawFPS(400, 500); // TODO: Wrap Time and Debug text
+
+    renderer::backend::endFrame();
 }

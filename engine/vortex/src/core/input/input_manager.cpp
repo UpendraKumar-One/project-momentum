@@ -1,51 +1,54 @@
 #include "vortex/core/containers/hash_map.hpp"
 #include "vortex/core/input/input_manager.hpp"
 
-using namespace Vortex::Core;
+using namespace vortex;
 
-struct Vortex::Core::Impl
+namespace vortex::input
 {
-    Vortex::Containers::HashMap<InputAction, InputBackend::KeyCode> m_keyBindings_;
-};
-
-InputManager::InputManager()
-{
-    p_Impl = new Impl;
-
-    BindActionKey(InputAction::UP, InputBackend::KeyCode::W);
-    BindActionKey(InputAction::RIGHT, InputBackend::KeyCode::D);
-    BindActionKey(InputAction::DOWN, InputBackend::KeyCode::S);
-    BindActionKey(InputAction::LEFT, InputBackend::KeyCode::A);
-    BindActionKey(InputAction::JUMP, InputBackend::KeyCode::SPACE);
-    BindActionKey(InputAction::QUIT, InputBackend::KeyCode::ESC);
-}
-
-InputManager::~InputManager()
-{
-    delete p_Impl;
-}
-
-void InputManager::BindActionKey(InputAction action, InputBackend::KeyCode key)
-{
-    p_Impl->m_keyBindings_[action] = key;
-}
-
-bool InputManager::IsActionHeld(InputAction action) const
-{
-    auto it = p_Impl->m_keyBindings_.find(action);
-    if (it != p_Impl->m_keyBindings_.end())
+    struct Impl
     {
-        return InputBackend::IsHardwareKeyDown(it->second);
-    }
-    return false;
-}
+        containers::VHashMap<EInputAction, EKeyCode> m_keyBindings;
+    };
 
-bool InputManager::IsActionPressed(InputAction action) const
-{
-    auto it = p_Impl->m_keyBindings_.find(action);
-    if (it != p_Impl->m_keyBindings_.end())
+    VxInputManager::VxInputManager()
     {
-        return InputBackend::IsHardwareKeyPressed(it->second);
+        m_impl = new Impl;
+
+        bindActionKey(EInputAction::Up, EKeyCode::W);
+        bindActionKey(EInputAction::Right, EKeyCode::D);
+        bindActionKey(EInputAction::Down, EKeyCode::S);
+        bindActionKey(EInputAction::Left, EKeyCode::A);
+        bindActionKey(EInputAction::Jump, EKeyCode::Space);
+        bindActionKey(EInputAction::Quit, EKeyCode::Esc);
     }
-    return false;
+
+    VxInputManager::~VxInputManager()
+    {
+        delete m_impl;
+    }
+
+    void VxInputManager::bindActionKey(EInputAction action, EKeyCode key)
+    {
+        m_impl->m_keyBindings[action] = key;
+    }
+
+    bool VxInputManager::isActionHeld(EInputAction action) const
+    {
+        auto it = m_impl->m_keyBindings.find(action);
+        if (it != m_impl->m_keyBindings.end())
+        {
+            return isHardwareKeyDown(it->second);
+        }
+        return false;
+    }
+
+    bool VxInputManager::isActionPressed(EInputAction action) const
+    {
+        auto it = m_impl->m_keyBindings.find(action);
+        if (it != m_impl->m_keyBindings.end())
+        {
+            return isHardwareKeyPressed(it->second);
+        }
+        return false;
+    }
 }

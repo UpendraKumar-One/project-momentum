@@ -3,9 +3,9 @@
 
 namespace entity_factory
 {
-    vortex::ecs::Entity createPlayer(vortex::ecs::Registry& reg)
+    vortex::ecs::VxEntity createPlayer(vortex::ecs::VxRegistry& reg)
     {
-        vortex::ecs::Entity player = reg.createEntity();
+        vortex::ecs::VxEntity player = reg.createEntity();
 
 
         return player;

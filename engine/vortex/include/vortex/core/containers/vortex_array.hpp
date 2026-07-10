@@ -6,24 +6,24 @@
 #include <type_traits>
 #include <utility>
 
-namespace vortex::core
+namespace vortex::containers
 {
     template <typename T>
-    class VArray
+    class VxArray
     {
     public:
-        VArray(size_t cap)
+        VxArray(size_t cap)
             : m_capacity(cap), m_size(0)
         {
             m_rawBuffer = static_cast<T *>(::operator new(m_capacity * sizeof(T), std::align_val_t(alignof(T))));
         }
 
-        VArray(const VArray &) = delete;
-        VArray(VArray &&) = delete;
-        VArray &operator=(const VArray &) = delete;
-        VArray &operator=(VArray &&) = delete;
+        VxArray(const VxArray &) = delete;
+        VxArray(VxArray &&) = delete;
+        VxArray &operator=(const VxArray &) = delete;
+        VxArray &operator=(VxArray &&) = delete;
 
-        ~VArray()
+        ~VxArray()
         {
             if constexpr (!std::is_trivially_destructible_v<T>)
             {
@@ -66,6 +66,22 @@ namespace vortex::core
             {
                 m_rawBuffer[--m_size].~T();
             }
+            else
+            {
+                --m_size;
+            }
+        }
+
+        void clear()
+        {
+            if constexpr (!std::is_trivially_destructible_v<T>)
+            {
+                for (size_t i = 0; i < m_size; ++i)
+                {
+                    m_rawBuffer[i].~T();
+                }
+            }
+            m_size = 0;
         }
 
         const T &operator[](size_t i) const

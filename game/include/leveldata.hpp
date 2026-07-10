@@ -1,6 +1,6 @@
 #pragma once
 
-#include "raylib.h"
+#include "vortex/renderer/vortex_graphics.hpp"
 #include <string>
 #include "vortex/core/containers/vortex_array.hpp"
 
@@ -10,7 +10,7 @@ struct TileSet
     std::string name;
     int tile_height;
     int tile_width;
-    Texture2D texture;
+    VxTexture texture;
 };
 
 struct TileLayer

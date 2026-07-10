@@ -7,10 +7,10 @@
 namespace vortex::ecs
 {
     template <typename... Components>
-    class ComponentView
+    class VxComponentView
     {
     public:
-        ComponentView(ComponentPool<Components> *...pools)
+        VxComponentView(VxComponentPool<Components> *...pools)
             : m_pools(pools...)
         {
             m_isEmpty = ((pools == nullptr) || ...);
@@ -38,7 +38,7 @@ namespace vortex::ecs
             using pointer = uint16_t *;
             using reference = uint16_t &;
 
-            Iterator(const ComponentView *view, uint16_t index)
+            Iterator(const VxComponentView *view, uint16_t index)
                 : m_view(view), m_index(index)
             {
                 if (m_index < getTargetSize() && !isValid())
@@ -80,12 +80,12 @@ namespace vortex::ecs
 
             bool isValid() const
             {
-                Entity ent = m_view->m_targetPool->getEntityList()[m_index];
+                VxEntity ent = m_view->m_targetPool->getEntityList()[m_index];
                 return m_view->hasAllComponents(ent);
             }
 
             size_t m_index;
-            const ComponentView *m_view;
+            const VxComponentView *m_view;
         };
 
         Iterator begin() const
@@ -103,13 +103,13 @@ namespace vortex::ecs
         }
 
     private:
-        bool hasAllComponents(Entity ent) const
+        bool hasAllComponents(VxEntity ent) const
         {
-            return std::apply([ent](ComponentPool<Components> *...pools)
+            return std::apply([ent](VxComponentPool<Components> *...pools)
                               { return (pools->has(ent) && ...); }, m_pools);
         }
 
-        std::tuple<ComponentPool<Components> *...> m_pools;
+        std::tuple<VxComponentPool<Components> *...> m_pools;
         const IPool *m_targetPool = nullptr;
         bool m_isEmpty;
     };

@@ -1,16 +1,21 @@
 #pragma once
 
 namespace vortex::ecs {
-    class Registry;
+    class VxRegistry;
 }
 
 namespace vortex::systems
 {
-    class PhysicsSystem
+    class VxPhysicsSystem
     {
     public:
-        PhysicsSystem(float gravity);
-        void update(ecs::Registry& reg, float dt);
+        VxPhysicsSystem(float gravity);
+        
+        // Pass 1: Integrate forces into intended velocity
+        void dynamicsUpdate(ecs::VxRegistry& reg, float dt);
+
+        // Pass 2: Integrate final velocity into position
+        void kinematicsUpdate(ecs::VxRegistry& reg, float dt);
 
     private:
         float m_gravity;
