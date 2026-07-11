@@ -1,5 +1,7 @@
 #pragma once
 
+namespace vortex::renderer { class VxRenderQueue; }
+
 class Application
 {
 public:
@@ -17,7 +19,7 @@ private:
     void processInput();
     void physicsUpdate();
     void update(double dt);
-    void render();
+    void render(vortex::renderer::VxRenderQueue& queue);
 
     int m_physicsUpdateRate = 60;
 

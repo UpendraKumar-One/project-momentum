@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vortex/core/input/input_backend.hpp"
+#include "vortex/input/input_backend.hpp"
 
 namespace vortex::input
 {

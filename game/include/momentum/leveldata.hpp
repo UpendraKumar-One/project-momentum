@@ -10,7 +10,7 @@ struct TileSet
     std::string name;
     int tile_height;
     int tile_width;
-    VxTexture texture;
+    vortex::renderer::VxTexture texture;
 };
 
 struct TileLayer

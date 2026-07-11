@@ -1,5 +1,5 @@
 #include "vortex/core/containers/hash_map.hpp"
-#include "vortex/core/input/input_manager.hpp"
+#include "vortex/input/input_manager.hpp"
 
 using namespace vortex;
 

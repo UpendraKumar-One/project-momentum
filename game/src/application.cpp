@@ -1,9 +1,9 @@
-#include "application.hpp"
-#include "vortex/core/input/input_manager.hpp"
+#include "momentum/application.hpp"
+#include "vortex/input/input_manager.hpp"
 #include "vortex/renderer/renderer_backend.hpp"
 #include "vortex/renderer/render_queue.hpp"
 #include "vortex/core/utilities/vortex_time.hpp"
-#include "entity_factory.hpp"
+#include "momentum/entity_factory.hpp"
 
 using namespace vortex;
 
@@ -23,6 +23,7 @@ Application::~Application()
 void Application::run()
 {
     utils::VxTime::init();
+    renderer::VxRenderQueue renderQueue;
 
     while (m_isRunning && !renderer::backend::shouldClose())
     {
@@ -40,7 +41,9 @@ void Application::run()
         }
 
         update(dt);
-        render();
+        
+        renderQueue.clear();
+        render(renderQueue);
     }
 }
 
@@ -67,12 +70,11 @@ void Application::update(double dt)
 {
 }
 
-void Application::render()
+void Application::render(renderer::VxRenderQueue& queue)
 {
     renderer::backend::beginFrame();
     
     // Clear Screen Command
-    renderer::VxRenderQueue queue;
     renderer::RenderCommand clearCmd;
     clearCmd.type = renderer::ERenderCommandType::ClearScreen;
     clearCmd.data.clear.color = {0, 0, 0, 255}; // BLACK

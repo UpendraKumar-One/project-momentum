@@ -1,4 +1,4 @@
-#include "game/entity_factory.hpp"
+#include "momentum/entity_factory.hpp"
 #include "vortex/ecs/registry.hpp"
 
 namespace entity_factory

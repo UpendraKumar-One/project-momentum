@@ -29,35 +29,58 @@ FetchContent_MakeAvailable(json)
 
 # INTERFACE for all the include paths
 add_library(vortex_includes INTERFACE)
-target_include_directories(vortex_includes INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include/)
+target_include_directories(vortex_includes INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include/")
 
 #----------------------------------------------------------------------------------------------------------------------------------
 
 # STATIC LIBRARIES
 
 # src/core/---
+
 add_library(vortex_core STATIC 
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/core/input_manager.cpp
+    # Utilities-
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/core/utilities/vortex_time.cpp"
+
+    # Containers-
+
+
+    # Math-
 )
+
+
+# src/input/---
+add_library(vortex_input STATIC
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/input/input_manager.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/input/raylib_input.cpp"
+)
+target_link_libraries(vortex_input PRIVATE raylib)
 
 
 # src/ecs/---
 add_library(vortex_ecs STATIC 
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/ecs/entity_manager.cpp
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/ecs/entity_manager.cpp"
 )
+
+
+# src/renderer/---
+add_library(vortex_renderer STATIC
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/renderer/raylib_renderer.cpp"
+)
+target_link_libraries(vortex_renderer PRIVATE raylib)
 
 
 #src/systems/---
 add_library(vortex_systems STATIC 
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/systems/physics_system.cpp
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/systems/physics_system.cpp"
 )
-target_link_libraries(vortex_systems PUBLIC vortex_ecs)
 
 # PROVIDING INCLUDE PATHS FOR LIBRARIES
 
 set(PROJECT_STATIC_LIBS
     vortex_core
+    vortex_input
     vortex_ecs
+    vortex_renderer
     vortex_systems
 )
 
@@ -74,6 +97,8 @@ target_link_libraries(vortex INTERFACE
     vortex_includes
 
     vortex_core
+    vortex_input
     vortex_ecs
+    vortex_renderer
     vortex_systems
 )
