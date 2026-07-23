@@ -33,12 +33,12 @@ namespace vortex::ecs
         {
         public:
             using iterator_category = std::forward_iterator_tag;
-            using value_type = uint16_t;
+            using value_type = VxEntity;
             using difference_type = std::ptrdiff_t;
-            using pointer = uint16_t *;
-            using reference = uint16_t &;
+            using pointer = VxEntity *;
+            using reference = VxEntity &;
 
-            Iterator(const VxComponentView *view, uint16_t index)
+            Iterator(const VxComponentView *view, VxEntity index)
                 : m_view(view), m_index(index)
             {
                 if (m_index < getTargetSize() && !isValid())

@@ -1,31 +1,25 @@
 #pragma once
 
 #include <cstdint>
+#include "vortex/core/config/vortex_config.hpp"
 
 namespace vortex::ecs
 {
-    using VxEntity = uint16_t;
+    // Uses config:: constants from vortex_config.hpp
+    using VxEntity = config::VxEntity;
 
-    constexpr uint16_t INDEX_BITS = 12;
-    constexpr uint16_t INDEX_MASK = (1 << INDEX_BITS) - 1;
-
-    constexpr uint16_t GENERATION_BITS = 4;
-    constexpr uint16_t GENERATION_MASK = ((1 << GENERATION_BITS) - 1) << INDEX_BITS;
-
-    constexpr uint16_t MAX_ENTITIES = 0x1000;
-
-    inline uint16_t getEntityIndex(VxEntity ent)
+    inline VxEntity getEntityIndex(VxEntity ent)
     {
-        return ent & INDEX_MASK;
+        return ent & config::ENTITY_INDEX_MASK;
     }
 
-    inline uint16_t getEntityGeneration(VxEntity ent)
+    inline VxEntity getEntityGeneration(VxEntity ent)
     {
-        return (ent & GENERATION_MASK) >> INDEX_BITS;
+        return (ent & config::ENTITY_GENERATION_MASK) >> config::ENTITY_INDEX_BITS;
     }
 
-    inline VxEntity generateEntity(uint16_t index, uint16_t generation)
+    inline VxEntity generateEntity(VxEntity index, VxEntity generation)
     {
-        return (generation << INDEX_BITS) | index;
+        return (generation << config::ENTITY_INDEX_BITS) | (index & config::ENTITY_INDEX_MASK);
     }
 }

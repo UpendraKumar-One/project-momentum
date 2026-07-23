@@ -1,1 +1,3 @@
 build/
+
+include/vortex/core/containers/test_dynamic_array.hpp

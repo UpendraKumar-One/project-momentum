@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vortex/core/containers/vortex_array.hpp"
+#include "vortex/core/config/vortex_config.hpp"
 
 #include "vortex/ecs/entity_manager.hpp"
 #include "vortex/ecs/component_pool.hpp"
@@ -12,8 +13,6 @@
 
 namespace vortex::ecs
 {
-    constexpr size_t MAX_NUMBER_OF_COMPONENTS = 32;
-
     class VxRegistry
     {
     public:
@@ -38,7 +37,7 @@ namespace vortex::ecs
 
         void destroyEntity(VxEntity ent)
         {
-            for(size_t i = 0; i < MAX_NUMBER_OF_COMPONENTS; ++i)
+            for(size_t i = 0; i < config::MAX_COMPONENTS; ++i)
             {
                 if(m_componentPools[i])
                 {
@@ -125,6 +124,6 @@ namespace vortex::ecs
         }
 
         VxEntityManager m_entityManager;
-        containers::VxArray<utils::VxUniquePtr<IPool>> m_componentPools{MAX_NUMBER_OF_COMPONENTS};
+        containers::VxArray<utils::VxUniquePtr<IPool>> m_componentPools{config::MAX_COMPONENTS};
     };
 }

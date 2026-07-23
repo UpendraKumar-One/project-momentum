@@ -3,13 +3,14 @@
 #include "vortex/renderer/render_command.hpp"
 #include "vortex/core/containers/vortex_array.hpp"
 #include "vortex/core/utilities/algorithm.hpp"
+#include "vortex/core/config/vortex_config.hpp"
 
 namespace vortex::renderer
 {
     class VxRenderQueue
     {
     public:
-        VxRenderQueue(size_t max_commands = 10000)
+        VxRenderQueue(size_t max_commands = config::MAX_RENDER_COMMANDS)
             : m_commands(max_commands)
         {
         }

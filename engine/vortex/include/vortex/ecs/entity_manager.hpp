@@ -18,9 +18,9 @@ namespace vortex::ecs
 
     private:
         int m_entitiesLeft;
-        uint16_t m_activeEntities;
-        uint16_t m_nextFreeEntity;
-        uint16_t* m_entities;
+        VxEntity m_activeEntities;
+        VxEntity m_nextFreeEntity;
+        VxEntity* m_entities;
         std::bitset<0x1000> m_isActiveFlags;
     };
 }

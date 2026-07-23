@@ -2,16 +2,12 @@
 
 #include "vortex/core/containers/vortex_array.hpp"
 #include "vortex/ecs/entity_manager.hpp"
+#include "vortex/core/config/vortex_config.hpp"
 #include <utility>
 #include <cassert>
 
 namespace vortex::ecs
 {
-    namespace ComponentPoolConstants
-    {
-        constexpr uint16_t NULL_INDEX = 0xFFFF;
-    }
-
     class IPool
     {
     public:
@@ -21,7 +17,7 @@ namespace vortex::ecs
 
         virtual void remove(VxEntity ent) = 0;
 
-        virtual const vortex::containers::VxArray<uint16_t>& getEntityList() const = 0;
+        virtual const vortex::containers::VxArray<VxEntity>& getEntityList() const = 0;
     };
 
     template <typename T>
@@ -30,18 +26,18 @@ namespace vortex::ecs
     public:
         VxComponentPool()
         {
-            for (size_t i = 0; i < MAX_ENTITIES; ++i)
+            for (size_t i = 0; i < config::MAX_ENTITIES; ++i)
             {
-                m_sparseArray.push_back(ComponentPoolConstants::NULL_INDEX);
+                m_sparseArray.push_back(config::NULL_ENTITY);
             }
         }
 
         void add(VxEntity ent, const T &component)
         {
-            uint16_t index = getEntityIndex(ent);
-            if (m_sparseArray[index] == ComponentPoolConstants::NULL_INDEX)
+            VxEntity index = getEntityIndex(ent);
+            if (m_sparseArray[index] == config::NULL_ENTITY)
             {
-                m_sparseArray[index] = m_denseArray.size();
+                m_sparseArray[index] = static_cast<VxEntity>(m_denseArray.size());
                 m_denseArray.push_back(component);
                 m_denseToSparse.push_back(index);
                 return;
@@ -52,10 +48,10 @@ namespace vortex::ecs
 
         void add(VxEntity ent, T &&component)
         {
-            uint16_t index = getEntityIndex(ent);
-            if (m_sparseArray[index] == ComponentPoolConstants::NULL_INDEX)
+            VxEntity index = getEntityIndex(ent);
+            if (m_sparseArray[index] == config::NULL_ENTITY)
             {
-                m_sparseArray[index] = m_denseArray.size();
+                m_sparseArray[index] = static_cast<VxEntity>(m_denseArray.size());
                 m_denseArray.push_back(std::move(component));
                 m_denseToSparse.push_back(index);
                 return;
@@ -66,7 +62,7 @@ namespace vortex::ecs
 
         inline bool has(VxEntity ent)
         {
-            return m_sparseArray[getEntityIndex(ent)] != ComponentPoolConstants::NULL_INDEX;
+            return m_sparseArray[getEntityIndex(ent)] != config::NULL_ENTITY;
         }
 
         T &get(VxEntity ent)
@@ -88,8 +84,8 @@ namespace vortex::ecs
             if (!has(ent))
                 return;
 
-            uint16_t removed_index = getEntityIndex(ent);
-            uint16_t last_index = m_denseToSparse.back();
+            VxEntity removed_index = getEntityIndex(ent);
+            VxEntity last_index = m_denseToSparse.back();
 
             if (m_sparseArray[removed_index] != m_sparseArray[last_index])
             {
@@ -98,7 +94,7 @@ namespace vortex::ecs
                 m_sparseArray[last_index] = m_sparseArray[removed_index];
             }
 
-            m_sparseArray[removed_index] = ComponentPoolConstants::NULL_INDEX;
+            m_sparseArray[removed_index] = config::NULL_ENTITY;
 
             m_denseArray.pop_back();
             m_denseToSparse.pop_back();
@@ -114,14 +110,14 @@ namespace vortex::ecs
             return m_denseArray.size();
         }
 
-        const containers::VxArray<uint16_t>& getEntityList() const override
+        const containers::VxArray<VxEntity>& getEntityList() const override
         {
             return m_denseToSparse;
         }
 
     private:
-        containers::VxArray<uint16_t> m_sparseArray{MAX_ENTITIES};
-        containers::VxArray<uint16_t> m_denseToSparse{MAX_ENTITIES};
-        containers::VxArray<T> m_denseArray{MAX_ENTITIES};
+        containers::VxArray<VxEntity> m_sparseArray{config::MAX_ENTITIES};
+        containers::VxArray<VxEntity> m_denseToSparse{config::MAX_ENTITIES};
+        containers::VxArray<T> m_denseArray{config::MAX_ENTITIES};
     };
 }
